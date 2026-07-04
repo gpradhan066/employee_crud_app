@@ -9,22 +9,29 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.practices.ai.config.AiConfiguration.ProviderConfig;
 import com.practices.ai.config.AiProperties;
 
 @Service
 public class AiHealthService {
     private final AiProperties properties;
+    private final Map<String, ProviderConfig> providersConfig;
     private final HttpClient httpClient;
 
-    public AiHealthService(AiProperties properties) {
+    public AiHealthService(AiProperties properties, Map<String, ProviderConfig> providersConfig) {
         this.properties = properties;
+        this.providersConfig = providersConfig;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
     }
 
     public Map<String, Object> status() {
-        String baseUrl = normalizeBaseUrl(properties.provider().baseUrl());
+        ProviderConfig ollama = providersConfig.get("ollama");
+        String configuredBaseUrl = ollama != null ? ollama.baseUrl() : properties.provider().baseUrl();
+        String apiKey = ollama != null ? ollama.apiKey() : properties.provider().apiKey();
+        Duration timeout = ollama != null && ollama.timeout() != null ? ollama.timeout() : properties.provider().timeout();
+        String baseUrl = normalizeBaseUrl(configuredBaseUrl);
         if (baseUrl == null || baseUrl.isBlank()) {
             return Map.of(
                     "status", "DOWN",
@@ -36,10 +43,10 @@ public class AiHealthService {
             String modelsEndpoint = baseUrl.endsWith("/v1") ? baseUrl + "/models" : baseUrl + "/v1/models";
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(modelsEndpoint))
-                    .timeout(properties.provider().timeout())
+                    .timeout(timeout)
                     .GET();
-            if (properties.provider().apiKey() != null && !properties.provider().apiKey().isBlank()) {
-                requestBuilder.header("Authorization", "Bearer " + properties.provider().apiKey());
+            if (apiKey != null && !apiKey.isBlank()) {
+                requestBuilder.header("Authorization", "Bearer " + apiKey);
             }
             HttpResponse<String> response = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
             boolean healthy = response.statusCode() >= 200 && response.statusCode() < 300;
