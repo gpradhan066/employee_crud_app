@@ -29,18 +29,19 @@ public class AIService {
         this.userPrompt = userPrompt;
     }
 
-    public String chat(String message, String model, List<ChatMessage> history) {
-        return request(message, model, history).call().content();
+    public String chat(String message, String model, List<ChatMessage> history, List<String> context) {
+        return request(message, model, history, context).call().content();
     }
 
-    public Flux<String> stream(String message, String model, List<ChatMessage> history) {
-        return request(message, model, history).stream().content();
+    public Flux<String> stream(String message, String model, List<ChatMessage> history, List<String> context) {
+        return request(message, model, history, context).stream().content();
     }
 
     private ChatClient.ChatClientRequestSpec request(
-            String message, String model, List<ChatMessage> history) {
+            String message, String model, List<ChatMessage> history, List<String> context) {
         String renderedSystemPrompt = new PromptTemplate(systemPrompt).render(Map.of(
-                "history", formatHistory(history)));
+                "history", formatHistory(history),
+                "context", formatContext(context)));
         String renderedUserPrompt = new PromptTemplate(userPrompt).render(Map.of(
                 "message", message));
 
@@ -58,5 +59,16 @@ public class AIService {
                 .map(item -> item.role().name() + ": " + item.content())
                 .reduce((left, right) -> left + "\n" + right)
                 .orElse("No previous conversation.");
+    }
+
+    private String formatContext(List<String> context) {
+        if (context == null || context.isEmpty()) {
+            return "No additional context.";
+        }
+        return context.stream()
+                .filter(item -> item != null && !item.isBlank())
+                .reduce((left, right) -> left + "\n- " + right)
+                .map(items -> "- " + items)
+                .orElse("No additional context.");
     }
 }

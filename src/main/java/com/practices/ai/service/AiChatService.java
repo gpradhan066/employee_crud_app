@@ -1,6 +1,7 @@
 package com.practices.ai.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -32,7 +33,8 @@ public class AiChatService {
         String answer = aiService.chat(
                 validated.message(),
                 validated.model(),
-                memory.get(validated.conversationId()));
+                memory.get(validated.conversationId()),
+                List.of());
         Instant now = Instant.now();
         storeConversation(validated, answer, now);
         return new ChatResponse(validated.conversationId(), answer, validated.model(), now);
@@ -44,7 +46,8 @@ public class AiChatService {
         return aiService.stream(
                         validated.message(),
                         validated.model(),
-                        memory.get(validated.conversationId()))
+                        memory.get(validated.conversationId()),
+                        List.of())
                 .doOnNext(answer::append)
                 .doOnComplete(() -> storeConversation(validated, answer.toString(), Instant.now()));
     }
