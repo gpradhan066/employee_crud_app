@@ -30,6 +30,9 @@ public class EmployeeService {
 		
 		existingEmployee.setName(emp.getName());
 		existingEmployee.setDepartment(emp.getDepartment());
+		existingEmployee.setSalary(emp.getSalary());
+		existingEmployee.setPerformance(emp.getPerformance());
+		existingEmployee.setExperience(emp.getExperience());
 		
 		return empRepo.save(existingEmployee);
 	}
