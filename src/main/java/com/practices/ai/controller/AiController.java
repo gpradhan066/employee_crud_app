@@ -17,6 +17,7 @@ import com.practices.ai.controller.dto.ChatResponse;
 import com.practices.ai.controller.dto.ModelResponse;
 import com.practices.ai.controller.dto.SearchResponse;
 import com.practices.ai.service.AiChatService;
+import com.practices.ai.service.AiHealthService;
 import com.practices.ai.service.AiModelService;
 import com.practices.ai.service.AiSearchService;
 
@@ -29,16 +30,24 @@ public class AiController {
     private final AiChatService chatService;
     private final AiModelService modelService;
     private final AiSearchService searchService;
+    private final AiHealthService healthService;
 
-    public AiController(AiChatService chatService, AiModelService modelService, AiSearchService searchService) {
+    public AiController(AiChatService chatService, AiModelService modelService, AiSearchService searchService,
+            AiHealthService healthService) {
         this.chatService = chatService;
         this.modelService = modelService;
         this.searchService = searchService;
+        this.healthService = healthService;
     }
 
     @PostMapping("/chat")
     public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
         return ResponseEntity.ok(chatService.chat(request));
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<?> health() {
+        return ResponseEntity.ok(healthService.status());
     }
 
     @PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
