@@ -28,6 +28,8 @@ public class AiModelService {
 
         visibleModels.add(new ModelResponse("gpt-4.1-mini", "ChatGPT (not configured)", "OpenAI", false));
         visibleModels.add(new ModelResponse("gemini", "Gemini (not configured)", "Google", false));
+        visibleModels.add(new ModelResponse("claude", "Claude (not configured)", "Anthropic", false));
+        visibleModels.add(new ModelResponse("bedrock", "Bedrock (not configured)", "AWS", false));
         return List.copyOf(visibleModels);
     }
 }

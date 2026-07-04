@@ -2,6 +2,7 @@ package com.practices.ai.controller;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,8 @@ import com.practices.ai.controller.dto.SearchResponse;
 import com.practices.ai.service.AiChatService;
 import com.practices.ai.service.AiModelService;
 import com.practices.ai.service.AiSearchService;
+
+import reactor.core.publisher.Flux;
 
 @CrossOrigin
 @RestController
@@ -38,6 +41,10 @@ public class AiController {
         return ResponseEntity.ok(chatService.chat(request));
     }
 
+    @PostMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> stream(@RequestBody ChatRequest request) {
+        return chatService.stream(request);
+    }
     @GetMapping("/models")
     public List<ModelResponse> models() {
         return modelService.models();
