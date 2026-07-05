@@ -11,6 +11,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.practices.ai.memory.ChatMessage;
+import com.practices.ai.tools.EmployeeCrudTools;
 
 import reactor.core.publisher.Flux;
 
@@ -19,18 +20,21 @@ public class AIService {
     private final ChatClient chatClient;
     private final Resource systemPrompt;
     private final Resource userPrompt;
+    private final EmployeeCrudTools employeeCrudTools;
 
     public AIService(
             ChatClient chatClient,
             @Value("classpath:/prompts/employee-assistant-system.st") Resource systemPrompt,
-            @Value("classpath:/prompts/employee-assistant-user.st") Resource userPrompt) {
+            @Value("classpath:/prompts/employee-assistant-user.st") Resource userPrompt,
+            EmployeeCrudTools employeeCrudTools) {
         this.chatClient = chatClient;
         this.systemPrompt = systemPrompt;
         this.userPrompt = userPrompt;
+        this.employeeCrudTools = employeeCrudTools;
     }
 
     public String chat(String message, String model, List<ChatMessage> history, List<String> context, boolean think) {
-        return request(message, model, history, context, think).call().content();
+        return stripAssistantPrefix(request(message, model, history, context, think).call().content());
     }
 
     public Flux<String> stream(
@@ -56,7 +60,19 @@ public class AIService {
         return chatClient.prompt()
                 .system(renderedSystemPrompt)
                 .user(renderedUserPrompt)
+                .tools(employeeCrudTools)
                 .options(options);
+    }
+
+    private String stripAssistantPrefix(String answer) {
+        if (answer == null) {
+            return answer;
+        }
+        String trimmed = answer.strip();
+        if (trimmed.regionMatches(true, 0, "assistant:", 0, "assistant:".length())) {
+            return trimmed.substring("assistant:".length()).strip();
+        }
+        return trimmed;
     }
 
     private String formatHistory(List<ChatMessage> history) {
