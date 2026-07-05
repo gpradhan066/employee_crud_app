@@ -27,13 +27,15 @@ public class EmployeeCrudTools {
             @ToolParam(description = "Department the employee belongs to") String department,
             @ToolParam(description = "Annual salary") Double salary,
             @ToolParam(description = "Performance rating, e.g. good, average, poor") String performance,
-            @ToolParam(description = "Years of experience") Integer experience) {
+            @ToolParam(description = "Years of experience") Integer experience,
+            @ToolParam(required = false, description = "Job role or title, e.g. Java Developer") String role) {
         Employee employee = new Employee();
         employee.setName(name);
         employee.setDepartment(department);
         employee.setSalary(salary);
         employee.setPerformance(performance);
         employee.setExperience(experience);
+        employee.setRole(role);
         return employeeService.saveEmployee(employee);
     }
 
@@ -45,13 +47,15 @@ public class EmployeeCrudTools {
             @ToolParam(description = "Department the employee belongs to") String department,
             @ToolParam(description = "Annual salary") Double salary,
             @ToolParam(description = "Performance rating, e.g. good, average, poor") String performance,
-            @ToolParam(description = "Years of experience") Integer experience) {
+            @ToolParam(description = "Years of experience") Integer experience,
+            @ToolParam(required = false, description = "Job role or title, e.g. Java Developer") String role) {
         Employee employee = new Employee();
         employee.setName(name);
         employee.setDepartment(department);
         employee.setSalary(salary);
         employee.setPerformance(performance);
         employee.setExperience(experience);
+        employee.setRole(role);
         return employeeService.updateEmployee(id, employee);
     }
 
