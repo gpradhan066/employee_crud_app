@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -29,26 +29,34 @@ public class AIService {
         this.userPrompt = userPrompt;
     }
 
-    public String chat(String message, String model, List<ChatMessage> history, List<String> context) {
-        return request(message, model, history, context).call().content();
+    public String chat(String message, String model, List<ChatMessage> history, List<String> context, boolean think) {
+        return request(message, model, history, context, think).call().content();
     }
 
-    public Flux<String> stream(String message, String model, List<ChatMessage> history, List<String> context) {
-        return request(message, model, history, context).stream().content();
+    public Flux<String> stream(
+            String message, String model, List<ChatMessage> history, List<String> context, boolean think) {
+        return request(message, model, history, context, think).stream().content();
     }
 
     private ChatClient.ChatClientRequestSpec request(
-            String message, String model, List<ChatMessage> history, List<String> context) {
+            String message, String model, List<ChatMessage> history, List<String> context, boolean think) {
         String renderedSystemPrompt = new PromptTemplate(systemPrompt).render(Map.of(
                 "history", formatHistory(history),
                 "context", formatContext(context)));
         String renderedUserPrompt = new PromptTemplate(userPrompt).render(Map.of(
                 "message", message));
 
+        OllamaChatOptions.Builder options = OllamaChatOptions.builder().model(model);
+        if (think) {
+            options.enableThinking();
+        } else {
+            options.disableThinking();
+        }
+
         return chatClient.prompt()
                 .system(renderedSystemPrompt)
                 .user(renderedUserPrompt)
-                .options(ChatOptions.builder().model(model));
+                .options(options);
     }
 
     private String formatHistory(List<ChatMessage> history) {

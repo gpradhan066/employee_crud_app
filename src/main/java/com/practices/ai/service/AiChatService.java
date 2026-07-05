@@ -34,7 +34,8 @@ public class AiChatService {
                 validated.message(),
                 validated.model(),
                 memory.get(validated.conversationId()),
-                List.of());
+                List.of(),
+                validated.think());
         Instant now = Instant.now();
         storeConversation(validated, answer, now);
         return new ChatResponse(validated.conversationId(), answer, validated.model(), now);
@@ -47,7 +48,8 @@ public class AiChatService {
                         validated.message(),
                         validated.model(),
                         memory.get(validated.conversationId()),
-                        List.of())
+                        List.of(),
+                        validated.think())
                 .doOnNext(answer::append)
                 .doOnComplete(() -> storeConversation(validated, answer.toString(), Instant.now()));
     }
@@ -62,7 +64,8 @@ public class AiChatService {
                 ? UUID.randomUUID().toString() : request.conversationId().trim();
         String model = request.model() == null || request.model().isBlank()
                 ? properties.defaultModel() : request.model().trim();
-        return new ValidatedChat(conversationId, message, model);
+        boolean think = request.think() == null || request.think();
+        return new ValidatedChat(conversationId, message, model, think);
     }
 
     private void storeConversation(ValidatedChat chat, String answer, Instant createdAt) {
@@ -70,6 +73,6 @@ public class AiChatService {
         memory.append(chat.conversationId(), new ChatMessage(Role.ASSISTANT, answer, createdAt));
     }
 
-    private record ValidatedChat(String conversationId, String message, String model) {
+    private record ValidatedChat(String conversationId, String message, String model, boolean think) {
     }
 }
