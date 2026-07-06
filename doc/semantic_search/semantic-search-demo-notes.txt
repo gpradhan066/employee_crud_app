@@ -1,0 +1,61 @@
+SEMANTIC SEARCH DEMO - copy each Title/Content pair below into the "+ Document" form
+one at a time (Search mode -> + Document -> paste Title -> paste Content -> Save document).
+
+=====================================================================
+NOTE 1
+Title:   Priya Sharma - Skills Note
+Content: Priya Sharma has 5 years of experience building real-time data pipelines with
+         Apache Kafka and Spark Streaming, and leads the team's event-driven architecture
+         initiatives.
+
+=====================================================================
+NOTE 2
+Title:   Arjun Mehta - Skills Note
+Content: Arjun Mehta is a frontend specialist skilled in React, TypeScript, and
+         accessibility (WCAG) compliance, with several published UI component libraries.
+
+=====================================================================
+NOTE 3
+Title:   Neha Kapoor - Skills Note
+Content: Neha Kapoor is a certified AWS Solutions Architect with deep expertise in
+         Kubernetes, Terraform, and cloud cost optimization across multi-region deployments.
+
+=====================================================================
+NOTE 4
+Title:   Rahul Verma - Skills Note
+Content: Rahul Verma specializes in relational database performance tuning, particularly
+         PostgreSQL query optimization, indexing strategy, and replication setup.
+
+=====================================================================
+
+QUERIES TO TRY (Search mode, after adding the notes above):
+
+1. "Kafka expert"
+   Expect: Note 1 (Priya Sharma) ranks highest - direct term match plus semantic fit.
+
+2. "React developer"
+   Expect: Note 2 (Arjun Mehta) ranks highest.
+
+3. "Cloud infrastructure specialist"
+   Expect: Note 3 (Neha Kapoor) ranks highest - notice the note never says "cloud
+   infrastructure" literally, only AWS/Kubernetes/Terraform - this is the semantic
+   (meaning-based) match the earlier "vector DB" explanation covered, not a keyword hit.
+
+4. "Database performance tuning"
+   Expect: Note 4 (Rahul Verma) ranks highest.
+
+5. "Java developer"
+   Expect: existing employees with role = Java Developer (e.g. Gopinatha pradhan,
+   Dipak Borade, if still set from earlier testing) rank highest - this one hits your
+   real employee data, not the notes, showing both sources getting searched together.
+
+6. "Marketing manager"
+   Expect: no strong match exists in your data at all. Unlike RAG/Policy mode, Search
+   mode never refuses - it always returns its top-K ranked results, just with low
+   scores (roughly 10-20%). Good way to see the score number tell you "weak match"
+   rather than getting an explicit refusal message.
+
+Reminder: if you add or edit employees directly (not through notes), their structured
+fields won't be searchable until you click "Refresh index" in Search mode - notes added
+via "+ Document" are indexed immediately, employees are not (see the earlier explanation
+of why that staleness exists).

@@ -1,0 +1,82 @@
+OTHER FEATURES - DEMO QUERIES
+=============================
+
+For Spring AI, LangChain4j, and Agent, there's no file to upload - these modes work over
+existing employee data + tools, not uploaded documents. This is just query lists per mode.
+
+
+SPRING AI (function calling)
+-----------------------------
+
+Query:  How many employees do we have?
+Tests:  employeeCount tool
+
+Query:  What is Jon's salary?
+Tests:  findEmployee tool
+
+Query:  List everyone in the Engg department
+Tests:  findEmployeesByDepartment tool
+
+Query:  What's the average salary across all employees?
+Tests:  averageSalary tool
+
+Query:  Who earns more than 40000?
+Tests:  findHighSalaryEmployees tool
+
+Query:  Show me the list of employees
+Tests:  listAllEmployees tool
+
+Query:  I want to save a new employee
+Tests:  Should ask for missing details instead of inventing one
+
+Query:  Create an employee named Test User in QA department, salary 30000,
+        performance good, 2 years experience
+Tests:  createEmployee - full details given, should succeed directly
+
+Query:  Delete employee id 9999
+Tests:  deleteEmployee - tests a non-existent id
+
+Query:  How do I apply for leave?
+Tests:  Plain answer, no tool call
+
+
+LANGCHAIN4J
+-----------------------------
+Has its own separate tools and its own retrieval (embeds employee records independently,
+unrelated to the pgvector Search/Policy features).
+
+Query:  Use your tool to find Jon's department and salary
+Tests:  findEmployeeByName tool
+
+Query:  List every employee
+Tests:  listEmployees tool
+
+Query:  Tell me about an employee with Kafka experience
+Tests:  LangChain4j's own retrieval over employee records
+
+Note: expect these to be slow (30s-2min+) since tool-calling costs two model round-trips.
+
+
+AGENT (plan -> confirm bulk actions)
+-----------------------------
+Filters it understands: department, role, performance, salary range, name.
+Does NOT support filtering by experience.
+
+Instruction:  Give everyone in the Engg department a 10 percent raise
+Tests:        Department-only filter, percent increase
+
+Instruction:  Give every Java Developer a 15 percent salary hike
+Tests:        Role filter
+
+Instruction:  Set Jon's performance to excellent
+Tests:        Name filter + set_performance action
+
+Instruction:  Increase salary by 2000 for everyone in Hr
+Tests:        Department filter + flat increase
+
+Instruction:  Give the HR team a bonus
+Tests:        Deliberately ambiguous - no amount specified, should trigger a
+              clarification question
+
+Note: try both Confirm and Cancel on different runs to see the real DB write vs.
+the no-op path.

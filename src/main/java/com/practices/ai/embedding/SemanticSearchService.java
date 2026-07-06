@@ -41,14 +41,18 @@ public class SemanticSearchService {
 
     private SemanticSearchResult toResult(Document document) {
         Object type = document.getMetadata().get("type");
-        Object referenceId = document.getMetadata().get("referenceId");
-        String title = switch (String.valueOf(type)) {
+        String typeName = String.valueOf(type);
+        Object referenceId = typeName.equals("policy_chunk")
+                ? document.getMetadata().get("policyDocumentId")
+                : document.getMetadata().get("referenceId");
+        String title = switch (typeName) {
             case "employee" -> String.valueOf(document.getMetadata().get("name"));
             case "document" -> String.valueOf(document.getMetadata().get("title"));
+            case "policy_chunk" -> document.getMetadata().get("category") + " - " + document.getMetadata().get("filename");
             default -> "Unknown";
         };
         Long refId = referenceId instanceof Number number ? number.longValue() : null;
 
-        return new SemanticSearchResult(String.valueOf(type), refId, title, document.getText(), document.getScore());
+        return new SemanticSearchResult(typeName, refId, title, document.getText(), document.getScore());
     }
 }

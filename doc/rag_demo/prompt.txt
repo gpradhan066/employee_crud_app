@@ -1,0 +1,22 @@
+Questions to try (roughly ordered from simple to more interesting):
+
+How many days of annual leave do I get, and when can I start using it?
+→ tests basic fact + a secondary detail (90-day eligibility) in the same chunk.
+
+Can I carry over unused annual leave, and is there a deadline to use it?
+→ tests whether it finds the carry-forward and the March 31st usage deadline, which are two sentences apart.
+
+Do I need a doctor's note for sick leave?
+→ phrased differently from the document's wording ("medical certificate from a registered physician") — good test of semantic retrieval, not just keyword match.
+
+How much paternity leave do I get and by when must I take it?
+→ likely a different chunk from the annual/sick leave questions — good way to see retrieval pull from a different section.
+
+What happens if I need more than 10 days off in one go?
+→ tests whether it finds the "additional approval from department head" rule, which is a less obvious detail.
+
+What's the notice period for a client meeting reschedule?
+→ deliberately unanswerable — not in the document at all. Should get refused with something like "the uploaded documents don't cover that." This is the important one to try, since it proves the strict-grounding behavior rather than just fact lookup.
+
+What is Python used for?
+→ also deliberately off-topic, a cleaner test than #6 since it's obviously unrelated to any policy — same expected refusal.

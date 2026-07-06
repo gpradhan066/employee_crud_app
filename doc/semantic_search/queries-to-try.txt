@@ -1,0 +1,26 @@
+QUERIES TO TRY (Search mode, after adding the 4 notes):
+
+1. "Kafka expert"
+   Expect: Note 1 (Priya Sharma) ranks highest.
+
+2. "React developer"
+   Expect: Note 2 (Arjun Mehta) ranks highest.
+
+3. "Cloud infrastructure specialist"
+   Expect: Note 3 (Neha Kapoor) ranks highest - the note never says "cloud
+   infrastructure" literally, only AWS/Kubernetes/Terraform - a semantic
+   (meaning-based) match, not a keyword hit.
+
+4. "Database performance tuning"
+   Expect: Note 4 (Rahul Verma) ranks highest.
+
+5. "Java developer"
+   Expect: existing employees with role = Java Developer rank highest -
+   this hits your real employee data, not the notes.
+
+6. "Marketing manager"
+   Expect: no strong match. Search mode never refuses - it always returns
+   its top-K ranked results, just with low scores (roughly 10-20%).
+
+Reminder: notes added via "+ Document" are indexed immediately; employees
+are not - click "Refresh index" in Search mode after adding/editing employees.
