@@ -80,3 +80,7 @@ Tests:        Deliberately ambiguous - no amount specified, should trigger a
 
 Note: try both Confirm and Cancel on different runs to see the real DB write vs.
 the no-op path.
+
+MCP
+-----------------------------------------------------
+How many employees do we have, and what is the average salary?

@@ -9,11 +9,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AiProperties(
         String defaultModel,
         int maxHistoryMessages,
+        int summaryTriggerMessages,
         Provider provider) {
 
     public AiProperties {
         defaultModel = defaultModel == null || defaultModel.isBlank() ? "local-assistant" : defaultModel;
         maxHistoryMessages = maxHistoryMessages <= 0 ? 40 : maxHistoryMessages;
+        summaryTriggerMessages = summaryTriggerMessages <= 0 ? maxHistoryMessages * 2 : summaryTriggerMessages;
         provider = provider == null ? new Provider(null, null, null, null, null) : provider;
     }
 
